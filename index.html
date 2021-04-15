@@ -83,11 +83,6 @@
                   final3.dispose();
                   tf.dispose(model);
                   tf.disposeVariables();
-                  // console.log(
-                  //   "Make sure we cleaned up"
-                  //   tf.memory().numTensors
-                  // );
-                  // myButton.classList.remove("is-loading");
                 });
               });
             });
@@ -241,7 +236,7 @@
 
     <section>
       <p>
-        The following is a Generative Adversarial Network trained on the NIST
+        The following is a Generative Adversarial Network trained on the EMNIST
         dataset to generate random CAPTCHA pictures. It features the combined
         use of two models. One model generates letters while the other generates
         numbers. The two results are mixed together to generate a CAPTCHA code.
