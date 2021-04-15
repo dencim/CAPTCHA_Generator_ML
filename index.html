@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+  />
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+  <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css"
+  />
+
+  <head>
+    <script>
+      //Letter
+      async function loadModel1() {
+        let modell = await tf.loadLayersModel("./model0/model.json");
+        console.log("model loaded");
+        return modell;
+      }
+
+      //Number
+      async function loadModel2() {
+        let modell = await tf.loadLayersModel("./model1/model.json");
+        console.log("model loaded");
+        return modell;
+      }
+
+      function make_prediction() {
+        var myButton = document.getElementById("btn");
+        myButton.classList.add("is-loading");
+        make_prediction_number();
+        make_prediction_letters();
+      }
+
+      function make_prediction_number() {
+        let model = loadModel2();
+        var myButton = document.getElementById("btn");
+
+        model.then(
+          function (res) {
+            let noise1 = tf.randomUniform([1, 100], -1, 1);
+            let noise2 = tf.randomUniform([1, 100], -1, 1);
+            let noise3 = tf.randomUniform([1, 100], -1, 1);
+
+            //Option : (training = "True")
+            let generated_image1 = res.predict(noise1);
+            let generated_image2 = res.predict(noise2);
+            let generated_image3 = res.predict(noise3);
+            let genImage1 = generated_image1.dataSync();
+            let genImage2 = generated_image2.dataSync();
+            let genImage3 = generated_image3.dataSync();
+
+            for (var i = 0; i < 784; i++) {
+              genImage1[i] = (genImage1[i] + 1) / 2;
+            }
+            for (var i = 0; i < 784; i++) {
+              genImage2[i] = (genImage2[i] + 1) / 2;
+            }
+            for (var i = 0; i < 784; i++) {
+              genImage3[i] = (genImage3[i] + 1) / 2;
+            }
+
+            const myCanvas1 = document.getElementById("c2");
+            const myCanvas2 = document.getElementById("c4");
+            const myCanvas3 = document.getElementById("c6");
+
+            const final1 = tf.tensor([genImage1]).reshape([28, 28, 1]);
+            const final2 = tf.tensor([genImage2]).reshape([28, 28, 1]);
+            const final3 = tf.tensor([genImage3]).reshape([28, 28, 1]);
+
+            tf.browser.toPixels(final1, myCanvas1).then(() => {
+              final1.dispose();
+
+              //Second
+              tf.browser.toPixels(final2, myCanvas2).then(() => {
+                final2.dispose();
+
+                //Third
+                tf.browser.toPixels(final3, myCanvas3).then(() => {
+                  final3.dispose();
+                  tf.dispose(model);
+                  tf.disposeVariables();
+                  // console.log(
+                  //   "Make sure we cleaned up"
+                  //   tf.memory().numTensors
+                  // );
+                  // myButton.classList.remove("is-loading");
+                });
+              });
+            });
+          },
+          function (err) {
+            console.log(err);
+            myButton.classList.remove("is-loading");
+          }
+        );
+      }
+
+      function make_prediction_letters() {
+        var myButton = document.getElementById("btn");
+        let model = loadModel1();
+
+        model.then(
+          function (res) {
+            let noise1 = tf.randomUniform([1, 100], -1, 1);
+            let noise2 = tf.randomUniform([1, 100], -1, 1);
+            let noise3 = tf.randomUniform([1, 100], -1, 1);
+
+            //Option : (training = "True")
+            let generated_image1 = res.predict(noise1);
+            let generated_image2 = res.predict(noise2);
+            let generated_image3 = res.predict(noise3);
+            let genImage1 = generated_image1.dataSync();
+            let genImage2 = generated_image2.dataSync();
+            let genImage3 = generated_image3.dataSync();
+
+            for (var i = 0; i < 784; i++) {
+              genImage1[i] = (genImage1[i] + 1) / 2;
+            }
+            for (var i = 0; i < 784; i++) {
+              genImage2[i] = (genImage2[i] + 1) / 2;
+            }
+            for (var i = 0; i < 784; i++) {
+              genImage3[i] = (genImage3[i] + 1) / 2;
+            }
+
+            const myCanvas1 = document.getElementById("c1");
+            const myCanvas2 = document.getElementById("c3");
+            const myCanvas3 = document.getElementById("c5");
+
+            const final1 = tf.tensor([genImage1]).reshape([28, 28, 1]);
+            const final2 = tf.tensor([genImage2]).reshape([28, 28, 1]);
+            const final3 = tf.tensor([genImage3]).reshape([28, 28, 1]);
+
+            tf.browser.toPixels(final1, myCanvas1).then(() => {
+              final1.dispose();
+
+              //Second
+              tf.browser.toPixels(final2, myCanvas2).then(() => {
+                final2.dispose();
+
+                //Third
+                tf.browser.toPixels(final3, myCanvas3).then(() => {
+                  final3.dispose();
+                  tf.dispose(model);
+                  tf.disposeVariables();
+                  // console.log(
+                  //   "Make sure we cleaned up"
+                  //   tf.memory().numTensors
+                  // );
+                  myButton.classList.remove("is-loading");
+                });
+              });
+            });
+          },
+          function (err) {
+            console.log(err);
+            myButton.classList.remove("is-loading");
+          }
+        );
+      }
+    </script>
+    <style>
+      body {
+        background-color: black;
+        height: 100vh;
+      }
+      canvas {
+        height: 200px;
+        width: 200px;
+      }
+      div {
+        display: flex;
+        justify-content: center;
+        padding-top: 20vh;
+      }
+      .custom-btm {
+        padding: 20px 50px;
+        margin-top: 50px;
+        border-radius: 10px;
+      }
+      /* .left {
+        border-top: 2px solid white;
+        border-bottom: 2px solid white;
+        border-left: 2px solid white;
+      }
+      .mid {
+        border-top: 2px solid white;
+        border-bottom: 2px solid white;
+      }
+      .right {
+        border-top: 2px solid white;
+        border-bottom: 2px solid white;
+        border-right: 2px solid white;
+      } */
+      canvas {
+        border-top: 2px solid white;
+        border-bottom: 2px solid white;
+      }
+      section {
+        width: 70%;
+        margin: auto;
+        padding-top: 50px;
+        color: green;
+      }
+    </style>
+  </head>
+
+  <body>
+    <br />
+    <br />
+    <br />
+    <div>
+      <canvas class="left" height="28" width="28" id="c1"></canvas>
+
+      <canvas class="mid" height="28" width="28" id="c2"></canvas>
+
+      <canvas class="mid" height="28" width="28" id="c3"></canvas>
+
+      <canvas class="mid" height="28" width="28" id="c4"></canvas>
+
+      <canvas class="mid" height="28" width="28" id="c5"></canvas>
+
+      <canvas class="right" height="28" width="28" id="c6"></canvas>
+    </div>
+    <!-- <progress class="progress is-small is-primary" max="100">15%</progress> -->
+
+    <center>
+      <!-- <button onclick="make_prediction()">Generate Captcha Image</button> -->
+      <button
+        onclick="make_prediction()"
+        class="button is-large is-warning custom-btm"
+        id="btn"
+      >
+        Generate Captcha Image
+      </button>
+    </center>
+
+    <section>
+      <p>
+        The following is a Generative Adversarial Network trained on the NIST
+        dataset to generate random CAPTCHA pictures. It features the combined
+        use of two models. One model generates letters while the other generates
+        numbers. The two results are mixed together to generate a CAPTCHA code.
+      </p>
+    </section>
+
+    <br />
+    <br />
+  </body>
+</html>
